@@ -26,7 +26,7 @@ jwinexe = Path(f"{jwinhome}.exe")
 sevenzip = jwinhome.joinpath("packages","julia","libexec","7z.exe")
 rcedit = locate.this_dir().joinpath("bootstrapped-rcedit.cmd")
 
-"""
+
 r = requests.get("https://codeload.github.com/heetbeet/juliawin/zip/refs/heads/main")
 z = zipfile.ZipFile(io.BytesIO(r.content))
 z.extractall(ziphome)
@@ -36,7 +36,7 @@ shutil.move(ziphome.joinpath("juliawin-main"), jwinhome)
 
 p = subprocess.call(f'"{jwinhome}/internals/scripts/bootstrap-juliawin-from-local-directory.bat"', 
                       shell=True)
-"""
+
 
 # Overwrite Git's installation settings
 overwrite_config = {
@@ -61,7 +61,7 @@ with artifacts.joinpath("7zsd_LZMA2_x64-from-7z-SFX-Builder.config").open("r") a
 # Write new icon to the sfx binary header
 shutil.copy(artifacts.joinpath("7zsd_LZMA2_x64-from-7z-SFX-Builder.sfx"), sfx_with_icon)
 subprocess.call([rcedit, sfx_with_icon, "--set-icon", icon])
-"""
+
 
 # Don't add these folders to 7zip
 nofolders = [
@@ -85,7 +85,6 @@ for i in list(Path(f"{jwinhome}/packages/conda").rglob("*.pyc")):
 with cd(jwinhome):
     subprocess.call([sevenzip, 'a', '-y', "-t7z", "-m0=lzma2:d1024m", "-mx=9", "-aoa", "-mfb=64", "-md=32m", "-ms=on", jwin7z, r".\*"]+nofoldersargs)
 
-"""
 
 # Copy everything nicely together
 arg1 = sfx_with_icon.name
