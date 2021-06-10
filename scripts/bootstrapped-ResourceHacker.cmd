@@ -20,7 +20,7 @@ if exist "%rhacktmp%_tmp" (
 )
 
 :: Can we immediately use sh?
-if exist "%rhackexename%" (
+if exist "%rhackpath%\ResourceHacker.exe" (
     call "%rhackpath%\ResourceHacker.exe" %*
     exit /b !errorlevel!
 )
