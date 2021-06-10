@@ -38,6 +38,7 @@ p = subprocess.call(f'"{jwinhome}/internals/scripts/bootstrap-juliawin-from-loca
                       shell=True)
 
 
+
 # Overwrite Git's installation settings
 overwrite_config = {
     "Title": f'Title="{dirname}"',
@@ -49,7 +50,7 @@ overwrite_config = {
     "RunProgram": rf'''RunProgram="julia.exe -i --banner=no -e 'Base.banner(); println(); println(\"  Thanks for installing Juliawin!\"); println(\"  Welcome to the Julia REPL\"); println()'" '''
 }
 
-with artifacts.joinpath("7zsd_LZMA2_x64-from-7z-SFX-Builder.config").open("r") as f:
+with artifacts.joinpath("7zsd_All_x64--https-github.com-chrislake-7zsfxmm-releases.config").open("r") as f:
     config = f.read()
     config_juliawin = '\n'.join(
         [overwrite_config[key] if (key:=i.split("=")[0].strip().strip(";")) in overwrite_config else i for i in config.split("\n")]
@@ -59,7 +60,7 @@ with artifacts.joinpath("7zsd_LZMA2_x64-from-7z-SFX-Builder.config").open("r") a
         fw.write(config_juliawin)
 
 # Write new icon to the sfx binary header
-shutil.copy(artifacts.joinpath("7zsd_LZMA2_x64-from-7z-SFX-Builder.sfx"), sfx_with_icon)
+shutil.copy(artifacts.joinpath("7zsd_All_x64--https-github.com-chrislake-7zsfxmm-releases.sfx"), sfx_with_icon)
 subprocess.call([rcedit, sfx_with_icon, "--set-icon", icon])
 
 
