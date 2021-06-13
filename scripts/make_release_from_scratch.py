@@ -33,10 +33,33 @@ z.extractall(ziphome)
 
 shutil.rmtree(jwinhome, ignore_errors=True)
 shutil.move(ziphome.joinpath("juliawin-main"), jwinhome)
+with cd(jwinhome.joinpath("userdata", ".julia", "registries")):
+    subprocess.call("git clone -–depth 2 https://github.com/JuliaRegistries/General.git", shell=True)
 
 p = subprocess.call(f'"{jwinhome}/internals/scripts/bootstrap-juliawin-from-local-directory.bat"', 
                       shell=True)
 
+# Don't add these folders to 7zip
+nofolders = [
+r"userdata\.julia\conda\*",
+r"userdata\.julia\scratchspaces\*",
+r"userdata\.julia\compiled\*",
+#r"userdata\.julia\registries\*"
+]
+nofoldersargs = [f"-xr!{i}" for i in nofolders]
+
+
+# Blatently delete all pyc and __pycache__ directories
+for i in list(Path(f"{jwinhome}/packages/conda").rglob("__pycache__")):
+    shutil.rmtree(i, ignore_errors=True)
+
+for i in list(Path(f"{jwinhome}/packages/conda").rglob("*.pyc")):
+    i.unlink()
+
+
+# Create 7zip archive of everything left over
+with cd(jwinhome):
+    subprocess.call([sevenzip, 'a', '-y', "-t7z", "-m0=lzma2:d1024m", "-mx=9", "-aoa", "-mfb=64", "-md=32m", "-ms=on", jwin7z, r".\*"]+nofoldersargs)
 
 
 # Overwrite Git's installation settings
@@ -62,29 +85,6 @@ with artifacts.joinpath("7zsd_All_x64--https-github.com-chrislake-7zsfxmm-releas
 # Write new icon to the sfx binary header
 shutil.copy(artifacts.joinpath("7zsd_All_x64--https-github.com-chrislake-7zsfxmm-releases.sfx"), sfx_with_icon)
 subprocess.call([rcedit, sfx_with_icon, "--set-icon", icon])
-
-
-# Don't add these folders to 7zip
-nofolders = [
-r"userdata\.julia\conda",
-r"userdata\.julia\scratchspaces",
-r"userdata\.julia\compiled",
-r"userdata\.julia\registries"
-]
-nofoldersargs = [f"-xr!{i}" for i in nofolders]
-
-
-# Blatently delete all pyc and __pycache__ directories
-for i in list(Path(f"{jwinhome}/packages/conda").rglob("__pycache__")):
-    shutil.rmtree(i, ignore_errors=True)
-
-for i in list(Path(f"{jwinhome}/packages/conda").rglob("*.pyc")):
-    i.unlink()
-
-
-# Create 7zip archive of everything left over
-with cd(jwinhome):
-    subprocess.call([sevenzip, 'a', '-y', "-t7z", "-m0=lzma2:d1024m", "-mx=9", "-aoa", "-mfb=64", "-md=32m", "-ms=on", jwin7z, r".\*"]+nofoldersargs)
 
 
 # Copy everything nicely together
