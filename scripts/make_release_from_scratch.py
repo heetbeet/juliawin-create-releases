@@ -33,10 +33,6 @@ z.extractall(ziphome)
 
 shutil.rmtree(jwinhome, ignore_errors=True)
 shutil.move(ziphome.joinpath("juliawin-main"), jwinhome)
-regpath = jwinhome.joinpath("userdata", ".julia", "registries")
-os.makedirs(regpath, exist_ok=True)
-with cd(regpath):
-    subprocess.call("git clone --depth 2 https://github.com/JuliaRegistries/General.git", shell=True)
 
 p = subprocess.call(f'"{jwinhome}/internals/scripts/bootstrap-juliawin-from-local-directory.bat"', 
                       shell=True)
